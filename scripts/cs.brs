@@ -98,7 +98,6 @@ Function GetFilesToTransfer(userData as Object, e as Object)
   MoveFile(e.GetRequestBodyFile(), "filesInSite.json")
 
 	filesToTransfer = GetDifferentOrMissingFiles()
-
   jsonStr$ = FormatJson(filesToTransfer)
   e.SetResponseBodyString(jsonStr$)
   e.SendResponse(200)

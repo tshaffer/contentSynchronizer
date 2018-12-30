@@ -25,6 +25,7 @@ import {
 
 import {
   getFileInfo,
+  httpGet,
   httpUploadFile,
 } from '../utilities';
 
@@ -163,7 +164,7 @@ export default class App extends React.Component<any, object> {
 
     return new Promise((resolve, reject) => {
 
-      httpUploadFile(ipAddress, '/GetFilesToTransfer', filePath, []).then((response: any) => {
+      httpUploadFile(ipAddress, '/GetSynchronizerFilesToTransfer', filePath, []).then((response: any) => {
         return response.json();
       }).then((filesToTransfer: FileToTransferBs[]) => {
         resolve(filesToTransfer);
@@ -173,7 +174,7 @@ export default class App extends React.Component<any, object> {
 
   uploadFileToBrightSign(sourcePath: string, destinationRelativePath: string, ipAddress: string): Promise<any> {
 
-    const endPoint = '/UploadFile';
+    const endPoint = '/SynchronizerUploadFile';
 
     const headers = [];
     const header: any = {};
@@ -186,12 +187,26 @@ export default class App extends React.Component<any, object> {
 
   transferFiles(siteFolder: string, filesToTransfer: FileToTransferBs[], ipAddress: string) {
 
+    const promises: any[] = [];
     filesToTransfer.forEach( (fileToTransfer) => {
       const relativePathToTransfer = fileToTransfer.relativepath;
       this.appendStatus(relativePathToTransfer);
       const fullPath = isomorphicPath.join(siteFolder, relativePathToTransfer);
-      const promise: any = this.uploadFileToBrightSign(fullPath, relativePathToTransfer, ipAddress);
+      promises.push(this.uploadFileToBrightSign(fullPath, relativePathToTransfer, ipAddress));
     });
+
+    Promise.all(promises)
+    .then( () => {
+      console.log('file transfers complete, launch script restart');
+      const url = 'http://' + ipAddress + ':8080' + '/RestartScript';
+      console.log(url);
+      httpGet(url).then( () => {
+        console.log('restart acknowledged');
+      });
+    })
+    .catch( (err: any) => {
+      console.log('file transfer error: ', err);
+    })
   }
 
   handleBeginTransfer() {

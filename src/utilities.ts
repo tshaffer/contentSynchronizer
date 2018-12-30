@@ -1,4 +1,5 @@
 import * as fse from 'fs-extra';
+import * as http from 'http';
 
 import * as crypto from 'crypto';
 
@@ -71,3 +72,24 @@ export function getFileInfo(filePath: string): Promise<FileInfo> {
     });
   });
 }
+
+export function httpGet(url: string) {
+  return new Promise( (resolve, reject) => {
+    http.get(url, (res: any) => {
+
+      // consume response body
+      res.resume();
+
+      const statusCode = res.statusCode;
+      if (statusCode !== 200) {
+        return reject(res);
+      }
+      resolve(res);
+
+    }).on('error', (error: any) => {
+      console.error(`httpGet error: ${error.message}`);
+      return reject(error);
+    });
+  });
+}
+
