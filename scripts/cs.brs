@@ -22,13 +22,13 @@ Sub RunContentSynchronizer()
   ContentSynchronizer.localServer.SetPort(ContentSynchronizer.msgPort)
 
   ContentSynchronizer.FilePostedAA = { HandleEvent: FilePosted, mVar: ContentSynchronizer }
-  ContentSynchronizer.localServer.AddPostToFile({ url_path: "/UploadFile", destination_directory: GetDefaultDrive(), user_data: ContentSynchronizer.FilePostedAA, passwords: credentials })
+  ContentSynchronizer.localServer.AddPostToFile({ url_path: "/SynchronizerUploadFile", destination_directory: GetDefaultDrive(), user_data: ContentSynchronizer.FilePostedAA, passwords: credentials })
 
   ContentSynchronizer.GetFilesToTransferAA =  { HandleEvent: GetFilesToTransfer, mVar: ContentSynchronizer }
-  ContentSynchronizer.localServer.AddPostToFile({ url_path: "/GetFilesToTransfer", destination_directory: GetDefaultDrive(), user_data: ContentSynchronizer.GetFilesToTransferAA })
+  ContentSynchronizer.localServer.AddPostToFile({ url_path: "/GetSynchronizerFilesToTransfer", destination_directory: GetDefaultDrive(), user_data: ContentSynchronizer.GetFilesToTransferAA })
 
   ContentSynchronizer.ExitScriptAA = { HandleEvent: ExitScript, mVar: ContentSynchronizer }
-  ContentSynchronizer.localServer.AddGetFromEvent({ url_path: "/ExitScript", user_data: ContentSynchronizer.ExitScriptAA })
+  ContentSynchronizer.localServer.AddGetFromEvent({ url_path: "/RestartScript", user_data: ContentSynchronizer.ExitScriptAA })
 
   ContentSynchronizer.EventLoop()
 
